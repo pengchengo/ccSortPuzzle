@@ -1,16 +1,22 @@
-import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director } from 'cc';
+import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3 } from 'cc';
+import { Glass, WaterType } from '../com/Glass';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
+    NOT_SELECT = -1;
+    selectIndex;
+    moveIndexMap = {}
+    history = []
+    elementList = []
+    moveElementNum = 0
+
     gamePrefab = null
     glassList = []
     cacheGlassList = []
+    cacheElementList = []
 
     levelCfgMap = null
     Init(){
-        for(let i = 0; i < 14; i++){
-            //instantiate()
-        }
         this.ReadLevelCfg()
         this.LoadGamePrefab()
     }
@@ -21,7 +27,28 @@ class _GameSystem {
             this.gamePrefab = instantiate(loadedRes)
             this.gamePrefab.active = true;
             this.gamePrefab.parent = director.getScene()
+            this.initCachList()
+            this.StartLevel()
         })
+    }
+
+    initCachList(){
+        for(let i = 0; i < 14; i++){
+            let glass = instantiate(this.gamePrefab.getChildByName("Glass"))
+            glass.active = false
+            this.gamePrefab.addChild(glass)
+            let glassCpt = glass.getComponent(Glass)
+            this.cacheGlassList.push(glassCpt)
+            //instantiate()
+        }
+        for(let i = 0; i < 7; i++){
+            let element = instantiate(this.gamePrefab.getChildByName("Element"))
+            element.active = false
+            this.gamePrefab.addChild(element)
+            let elementCpt = element.getComponent(Element)
+            this.cacheElementList.push(elementCpt)
+            //instantiate()
+        }
     }
 
     ReadLevelCfg()
@@ -65,7 +92,7 @@ class _GameSystem {
         let startX = (maxWidth - width) / 2 - contentWidth / 2 + lrDistance;
         for(let i = 0; i < num; i++)
         {
-            posList.Add([startX+distance*i, posY]);
+            posList.push([startX+distance*i, posY]);
         }
         return distance;
     }
@@ -114,16 +141,40 @@ class _GameSystem {
     {
         let glass = this.cacheGlassList.pop();
         this.glassList.push(glass);
-        glass.node.setActive(true);
+        glass.node.active = (true);
         glass.Init(this, index, posList, waterList);
         return glass;
     }
 
     StartLevel(){
+        this.moveElementNum = 0
+        this.moveIndexMap = {}
+        this.history = []
+        this.selectIndex = this.NOT_SELECT;
+
+        /*foreach (var mat in matList)
+        {
+            mat.gameObject.SetActive(false);
+            cacheMatList.Add(mat);
+        }
+        matList.Clear();*/
+
+        for(let i = 0; i < this.elementList.length; i++){
+            this.elementList[i].node.active = (false);
+            this.cacheElementList.push(this.elementList[i]);
+        }
+        this.elementList = [];
+
+        for(let i = 0; i < this.glassList.length; i++){
+            this.glassList[i].node.active = (false);
+            this.cacheGlassList.push(this.elementList[i]);
+        }
+        this.glassList = [];
+
         let levelId = 1
         let levelCfg = this.levelCfgMap[levelId]
         let num = levelCfg.length;
-        let addGlass = 0//PlayerPrefs.GetInt(STORAGE_ADD_GLASS_KEY, 0);
+        let addGlass = 0//PlayerPrefs.Getlet(STORAGE_ADD_GLASS_KEY, 0);
         if(addGlass == 1)
         {
             num = num + 1;
@@ -131,12 +182,296 @@ class _GameSystem {
         var posList = this.GetPositionList(num);
         for (let i = 0; i < levelCfg.length; i++)
         {
-            let waterList = posList[i];
+            let waterList = levelCfg[i];
             this.InitOneGlass(i, posList, waterList);
         }
         if (addGlass == 1)
         {
             this.InitOneGlass(num - 1, posList, []);
+        }
+    }
+
+    SelectOne(index){
+        /*if(GuideManager.Instance.SelectOne(selectIndex, index))
+        {
+            return;
+        }*/
+
+        if (this.selectIndex == this.NOT_SELECT && (this.moveIndexMap[index] && this.moveIndexMap[index] > 0))
+        {
+            return;
+        }
+        if (this.selectIndex == this.NOT_SELECT)
+        {
+            if (this.glassList[index].isEmpty())
+            {
+                return;
+            }
+            this.selectIndex = index;
+            this.glassList[index].MoveUp();
+        }
+        else if (this.selectIndex == index)
+        {
+            this.selectIndex = this.NOT_SELECT;
+            this.glassList[index].MoveDown();
+            //AudioManager.Instance.PlaySound("tan");
+        }
+        else
+        {
+            if (this.glassList[this.selectIndex].isPlayingAnim)
+            {
+                return;
+            }
+            let leftNum = this.glassList[index].getLeftNum();
+            if(leftNum <= 0)
+            {
+                this.glassList[this.selectIndex].MoveDown();
+                this.glassList[index].MoveUp();
+                this.selectIndex = index;
+                //AudioManager.Instance.PlaySound("tan");
+                return;
+            }
+            var srcGlass = this.glassList[this.selectIndex];
+            var desGlass = this.glassList[index];
+            let srcType = srcGlass.getTopWaterType();
+            let desType = desGlass.getTopWaterType();
+            if (desType == WaterType.Empty || srcType == desType)
+            {
+                var scrWaterList = srcGlass.getWaterList();
+                var desWaterList = desGlass.getWaterList();
+                let moveNum = 0;
+                for (var i = 1; i <= leftNum; i++)
+                {
+                    //if(scrWaterList[scrWaterList.length-1] == srcType)
+                    if((scrWaterList.length - i) >= 0 && scrWaterList[scrWaterList.length-i] == srcType)
+                    {
+                        moveNum = moveNum + 1;
+                        //break;
+                        //desWaterList.Add(srcType);
+                        //scrWaterList.RemoveAt(scrWaterList.length - 1);
+                    }else{
+                        break;
+                    }
+                    if(scrWaterList.length == 0)
+                    {
+                        break;
+                    }
+                }
+
+                //PlayMoveAnim(selectIndex, index, srcType);
+                console.log("pc77 moveNum="+ moveNum);
+                if(moveNum == 1){
+                    this.PlayMoveAnim(this.selectIndex, index, srcType);
+                }else{
+                    this.PlayLinkAnim(this.selectIndex, index, srcType, moveNum);
+                }
+                let mp = {} as any;
+                mp.src = this.selectIndex;
+                mp.des = index;
+                mp.num = moveNum;
+                this.history.push(mp);
+                this.selectIndex = this.NOT_SELECT;
+            }
+            else
+            {
+                if((this.moveIndexMap[index] && this.moveIndexMap[index] > 0))
+                {
+                    this.glassList[this.selectIndex].MoveDown();
+                    this.selectIndex = this.NOT_SELECT;
+                }
+                else
+                {
+                    this.glassList[this.selectIndex].MoveDown();
+                    this.glassList[index].MoveUp();
+                    this.selectIndex = index;
+                }
+                //AudioManager.Instance.PlaySound("tan");
+            }
+        }
+    }
+
+    public GetMoveElement()
+    {
+        let ele = this.cacheElementList.pop();
+        ele.transform.SetAsLastSibling();
+        this.elementList.push(ele);
+        return ele;
+    }
+
+    public CacheMoveElement(ele)
+    {
+        for(let i = 0; i < this.elementList.length; i++){
+            if(ele == this.elementList[ele]){
+                this.elementList.splice(i, 1)
+                break
+            }
+        }
+        ele.gameObject.SetActive(false);
+        this.cacheElementList.push(ele);
+    }
+
+    public PlayMoveAnim(srcIndex, desIndex, srcType)
+    {
+        if (this.moveIndexMap[desIndex])
+        {
+            this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] + 1;
+        }
+        else
+        {
+            this.moveIndexMap[desIndex] = 1;
+        }
+        var srcGlass = this.glassList[this.selectIndex];
+        var desGlass = this.glassList[desIndex];
+        var scrWaterList = srcGlass.getWaterList();
+        var desWaterList = desGlass.getWaterList();
+
+        let ele = srcGlass.GetMoveElement();
+        var eleObj = ele.node;
+
+        let isEmpty = desGlass.isEmpty();
+        var moveEndPos = desGlass.GetMoveEndPos();
+        Tween.stopAllByTarget(eleObj)
+        tween(eleObj)
+            .to(0.2, { position: desGlass.GetMovePassPos() })
+            .call(()=>{
+                if (isEmpty)
+                {
+                    desGlass.AddMat();
+                }
+            })
+            .to(0.2, { position: moveEndPos })
+            .call(()=>{
+                if (isEmpty)
+                {
+                    desGlass.RemoveMat();
+                }
+                console.log("我已经执行完毕");
+                this.moveElementNum = this.moveElementNum - 1;
+                this.CacheMoveElement(ele);
+                desGlass.RefreshIndex(desUpdateIndex);
+                desGlass.CheckFinish();
+                //AudioManager.Instance.PlaySound("tan");
+                this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
+                if(!this.checkCanMove()){
+                    //UIManager.Instance.uiController.ShowTishi();
+                }
+            })
+        desWaterList.Add(srcType);
+        scrWaterList.RemoveAt(scrWaterList.length - 1);
+        srcGlass.RemoveMoveElement(ele);
+        srcGlass.SetIsMoveUp(false);
+        var desUpdateIndex = desWaterList.length - 1;
+        this.moveElementNum = this.moveElementNum + 1;
+    }
+
+    public checkCanMove()
+    {
+        for (let i = 0; i < this.glassList.length; i++)
+        {
+            var srcGlass = this.glassList[i];
+            let topSrcType = srcGlass.getTopWaterType();
+            if(topSrcType == WaterType.Empty){
+                return true;
+            }
+            let moveNum = 0;
+            var srcWaterList = srcGlass.getWaterList();
+            for (let j = (srcWaterList.length-1); j >= 0 ; j--){
+                if(srcWaterList[j] == topSrcType){
+                    moveNum = moveNum + 1;
+                }else{
+                    break;
+                }
+            }
+            for (let j = 0; j < this.glassList.length; j++)
+            {
+                if (i == j)
+                {
+                    continue;
+                }
+                var desGlass = this.glassList[j];
+                let desType = desGlass.getTopWaterType();
+                if(desType == WaterType.Empty){
+                    return true;
+                }
+                var desWaterList = desGlass.getWaterList();
+                if (topSrcType == desType && moveNum <= (4-desWaterList.length))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public PlayLinkAnim(srcIndex, desIndex, srcType, moveNum){
+        if (this.moveIndexMap[desIndex])
+        {
+            this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] + moveNum;
+        }
+        else
+        {
+            this.moveIndexMap[desIndex] = moveNum;
+        }
+        var srcGlass = this.glassList[this.selectIndex];
+        var desGlass = this.glassList[desIndex];
+        var scrWaterList = srcGlass.getWaterList();
+        var desWaterList = desGlass.getWaterList();
+        var callNum = moveNum;
+        for(let i = 1; i <= moveNum; i++){
+            let ele = null;
+            let eleObj = null;
+            let isEmpty = false;
+            var moveEndPos = desGlass.GetMoveEndPos();
+            var s = DOTween.Sequence();
+            if (i == 1){
+                ele = srcGlass.GetMoveElement();
+                eleObj = ele.gameObject;
+                isEmpty = desGlass.isEmpty();
+                desWaterList.Add(srcType);
+                scrWaterList.RemoveAt(scrWaterList.Count - 1);
+                srcGlass.RemoveMoveElement(ele);
+                srcGlass.SetIsMoveUp(false);
+            }
+            else{
+                ele = srcGlass.CreateTopMoveElement();
+                eleObj = ele.gameObject;
+                desWaterList.Add(srcType);
+                scrWaterList.RemoveAt(scrWaterList.Count - 1);
+                let timeCount = 0f;
+                s.Append(DOTween.To(() => timeCount, a => timeCount = a, 1, (i-2)*0.2f));
+                s.Append(eleObj.transform.DOMove(srcGlass.GetMoveUpPos(), 0.2f));
+            }
+            var desUpdateIndex = desWaterList.Count - 1;
+            this.moveElementNum = this.moveElementNum + 1;
+            s.Append(eleObj.transform.DOMove(desGlass.GetMovePassPos(), 0.2f));
+            //回调
+            s.AppendCallback(() =>
+            {
+                var anim2 = eleObj.transform.DOMove(moveEndPos, 0.2f);
+                if (isEmpty)
+                {
+                    desGlass.AddMat();
+                }
+                anim2.OnComplete(() => {
+                    if (isEmpty)
+                    {
+                        desGlass.RemoveMat();
+                    }
+                    console.log("我已经执行完毕");
+                    this.moveElementNum = this.moveElementNum - 1;
+                    callNum = callNum - 1;
+                    this.CacheMoveElement(ele);
+                    desGlass.RefreshIndex(desUpdateIndex);
+                    if(callNum <= 0){
+                        desGlass.CheckFinish();
+                        if(!this.checkCanMove()){
+                            //UIManager.Instance.uiController.ShowTishi();
+                        }
+                    }
+                    //AudioManager.Instance.PlaySound("tan");
+                    this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
+                });
+            });
         }
     }
 }

@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3, TransformBit, UITransform } from 'cc';
 import { Glass, WaterType } from '../com/Glass';
+import {Element} from "../com/Element"
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
@@ -8,12 +9,14 @@ class _GameSystem {
     moveIndexMap = {}
     history = []
     elementList = []
+    matList = []
     moveElementNum = 0
 
     gamePrefab = null
     glassList = []
     cacheGlassList = []
     cacheElementList = []
+    cacheMatList = []
 
     levelCfgMap = null
     Init(){
@@ -47,6 +50,14 @@ class _GameSystem {
             this.gamePrefab.addChild(element)
             let elementCpt = element.getComponent(Element)
             this.cacheElementList.push(elementCpt)
+            //instantiate()
+        }
+
+        for(let i = 0; i < 7; i++){
+            let mat = instantiate(this.gamePrefab.getChildByName("Mat"))
+            mat.active = false
+            this.gamePrefab.addChild(mat)
+            this.cacheMatList.push(mat)
             //instantiate()
         }
     }
@@ -152,12 +163,11 @@ class _GameSystem {
         this.history = []
         this.selectIndex = this.NOT_SELECT;
 
-        /*foreach (var mat in matList)
-        {
-            mat.gameObject.SetActive(false);
-            cacheMatList.Add(mat);
+        for(let i = 0; i < this.matList.length; i++){
+            this.matList[i].active = (false);
+            this.cacheMatList.push(this.matList[i]);
         }
-        matList.Clear();*/
+        this.matList = [];
 
         for(let i = 0; i < this.elementList.length; i++){
             this.elementList[i].node.active = (false);
@@ -246,9 +256,6 @@ class _GameSystem {
                     if((scrWaterList.length - i) >= 0 && scrWaterList[scrWaterList.length-i] == srcType)
                     {
                         moveNum = moveNum + 1;
-                        //break;
-                        //desWaterList.Add(srcType);
-                        //scrWaterList.RemoveAt(scrWaterList.length - 1);
                     }else{
                         break;
                     }
@@ -292,10 +299,10 @@ class _GameSystem {
 
     public GetMoveElement()
     {
-        let ele = this.cacheElementList.pop();
-        ele.transform.SetAsLastSibling();
-        this.elementList.push(ele);
-        return ele;
+        let eleCpt = this.cacheElementList.pop() as Element;
+        eleCpt.node.setSiblingIndex(99)
+        this.elementList.push(eleCpt);
+        return eleCpt;
     }
 
     public CacheMoveElement(ele)
@@ -306,7 +313,8 @@ class _GameSystem {
                 break
             }
         }
-        ele.gameObject.SetActive(false);
+        ele.node.active = (false);
+        ele.node.setSiblingIndex(1)
         this.cacheElementList.push(ele);
     }
 
@@ -356,8 +364,9 @@ class _GameSystem {
                     //UIManager.Instance.uiController.ShowTishi();
                 }
             })
-        desWaterList.Add(srcType);
-        scrWaterList.RemoveAt(scrWaterList.length - 1);
+            .start()
+        desWaterList.push(srcType);
+        scrWaterList.pop();
         srcGlass.RemoveMoveElement(ele);
         srcGlass.SetIsMoveUp(false);
         var desUpdateIndex = desWaterList.length - 1;
@@ -422,56 +431,96 @@ class _GameSystem {
             let eleObj = null;
             let isEmpty = false;
             var moveEndPos = desGlass.GetMoveEndPos();
-            var s = DOTween.Sequence();
+            let moveEndFuc = ()=>{
+                if (isEmpty)
+                {
+                    desGlass.RemoveMat();
+                }
+                console.log("我已经执行完毕");
+                this.moveElementNum = this.moveElementNum - 1;
+                callNum = callNum - 1;
+                this.CacheMoveElement(ele);
+                desGlass.RefreshIndex(desUpdateIndex);
+                if(callNum <= 0){
+                    desGlass.CheckFinish();
+                    if(!this.checkCanMove()){
+                        //UIManager.Instance.uiController.ShowTishi();
+                    }
+                }
+                //AudioManager.Instance.PlaySound("tan");
+                this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
+            }
             if (i == 1){
                 ele = srcGlass.GetMoveElement();
                 eleObj = ele.gameObject;
                 isEmpty = desGlass.isEmpty();
-                desWaterList.Add(srcType);
-                scrWaterList.RemoveAt(scrWaterList.Count - 1);
+                desWaterList.push(srcType);
+                scrWaterList.pop();
                 srcGlass.RemoveMoveElement(ele);
                 srcGlass.SetIsMoveUp(false);
+                Tween.stopAllByTarget(eleObj)
+                tween(eleObj)
+                    .to(0.2, { position: desGlass.GetMovePassPos() })
+                    .call(()=>{
+                        if (isEmpty)
+                        {
+                            desGlass.AddMat();
+                        }
+                    })
+                    .to(0.2, { position: moveEndPos })
+                    .call(()=>{
+                        moveEndFuc()
+                    })
+                    .start()
             }
             else{
                 ele = srcGlass.CreateTopMoveElement();
                 eleObj = ele.gameObject;
-                desWaterList.Add(srcType);
-                scrWaterList.RemoveAt(scrWaterList.Count - 1);
-                let timeCount = 0f;
-                s.Append(DOTween.To(() => timeCount, a => timeCount = a, 1, (i-2)*0.2f));
-                s.Append(eleObj.transform.DOMove(srcGlass.GetMoveUpPos(), 0.2f));
+                desWaterList.push(srcType);
+                scrWaterList.pop();
+                Tween.stopAllByTarget(eleObj)
+                tween(eleObj)
+                    .delay((i-2)*0.2)
+                    .to(0.2, { position: srcGlass.GetMoveUpPos() })
+                    .to(0.2, { position: desGlass.GetMovePassPos() })
+                    .call(()=>{
+                        if (isEmpty)
+                        {
+                            desGlass.AddMat();
+                        }
+                    })
+                    .to(0.2, { position: moveEndPos })
+                    .call(()=>{
+                        moveEndFuc()
+                    })
+                    .start()
             }
             var desUpdateIndex = desWaterList.Count - 1;
             this.moveElementNum = this.moveElementNum + 1;
-            s.Append(eleObj.transform.DOMove(desGlass.GetMovePassPos(), 0.2f));
-            //回调
-            s.AppendCallback(() =>
-            {
-                var anim2 = eleObj.transform.DOMove(moveEndPos, 0.2f);
-                if (isEmpty)
-                {
-                    desGlass.AddMat();
-                }
-                anim2.OnComplete(() => {
-                    if (isEmpty)
-                    {
-                        desGlass.RemoveMat();
-                    }
-                    console.log("我已经执行完毕");
-                    this.moveElementNum = this.moveElementNum - 1;
-                    callNum = callNum - 1;
-                    this.CacheMoveElement(ele);
-                    desGlass.RefreshIndex(desUpdateIndex);
-                    if(callNum <= 0){
-                        desGlass.CheckFinish();
-                        if(!this.checkCanMove()){
-                            //UIManager.Instance.uiController.ShowTishi();
-                        }
-                    }
-                    //AudioManager.Instance.PlaySound("tan");
-                    this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
-                });
-            });
+        }
+    }
+
+    public GetMat()
+    {
+        let mat = this.cacheMatList.pop();
+        mat.active = (true);
+        this.matList.push(mat);
+        return mat;
+    }
+
+    public CacheMat(mat)
+    {
+        this.removeFromArray(this.matList, mat);
+        mat.active = (false);
+        this.cacheMatList.push(mat);
+    }
+
+    removeFromArray(array, value){
+        for(let i = 0; i < array.length; i++){
+            if(array[i] == value){
+                array.splice(i, 1)
+                break;
+            }
         }
     }
 }

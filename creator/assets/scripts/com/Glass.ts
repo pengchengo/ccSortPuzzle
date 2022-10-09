@@ -79,10 +79,10 @@ export class Glass extends Component {
         {
             this.myWaterList.push(waterList[i]);
         }
-        let startY = 0;
+        let startY = 47;
         for (let i = 0; i < this.imageList.length; i++)
         {
-            this.startXList.push(startY + 84.7*i);
+            this.startXList.push(startY + 45*i);
         }
         this.Refresh();
 
@@ -227,11 +227,11 @@ export class Glass extends Component {
         var firstCat = this.imageList[firstIndex];
         firstCat.active = (false);
         this.moveElement = this.myManager.GetMoveElement();
-        this.moveElement.transform.localScale = this.node.scale;
-        this.moveElement.gameObject.SetActive(true);
+        this.moveElement.node.scale = this.node.scale;
+        this.moveElement.node.active = (true);
         this.moveElement.Refresh(this.myWaterList[firstIndex]);
         var curWorldPos = firstCat.worldPosition;
-        this.moveElement.transform.position = new Vec3(curWorldPos.x, curWorldPos.y, curWorldPos.z);
+        this.moveElement.node.worldPosition = new Vec3(curWorldPos.x, curWorldPos.y, curWorldPos.z);
        
         if(firstIndex == 0)
         {
@@ -240,8 +240,8 @@ export class Glass extends Component {
         //var anim = this.moveElement.transform.DOMoveY(this.moveUpPos.y, 0.1f);
         this.isPlayingAnim = true;
         Tween.stopAllByTarget(this.moveElement)
-        tween(this.moveElement)
-            .to(1.0, { position: new Vec3(this.moveElement.worldPosition.x, this.moveUpPos.worldPosition.y, this.moveElement.worldPosition.z) })
+        tween(this.moveElement.node)
+            .to(1.0, { worldPosition: new Vec3(this.moveElement.node.worldPosition.x, this.moveUpPos.y, this.moveElement.node.worldPosition.z) })
             .call(()=>{
                 this.isPlayingAnim = false;
                 if (firstIndex == 0)
@@ -249,6 +249,7 @@ export class Glass extends Component {
                     this.RemoveMat();
                 }
             })
+            .start()
     }
 
     public GetMoveUpPos(){
@@ -285,6 +286,7 @@ export class Glass extends Component {
                     this.moveElement = null;
                     this.isPlayingAnim = false;
                 })
+                .start()
             //var anim = this.moveElement.transform.DOMoveY(firstCat.worldPosition.y, 0.1f);
         }
     }
@@ -319,7 +321,7 @@ export class Glass extends Component {
             this.curMat = this.myManager.GetMat();
             this.curMat.worldPosition = this.node.worldPosition;
         }
-        this.curMat.transform.SetAsLastSibling();
+        this.curMat.setSiblingIndex(99)
         this.curMat.worldPosition = this.node.worldPosition;
     }
 
@@ -344,6 +346,16 @@ export class Glass extends Component {
         {
             this.moveElement = null;
         }
+    }
+
+    public isEmpty()
+    {
+        return (this.myWaterList.length == 0);
+    }
+
+    public IsFinish()
+    {
+        return this.isFinish;
     }
 }
 

@@ -29,7 +29,7 @@ export class Element extends Component {
             typeStr = "0" + typeStr;
         }
         //var name = GameManager.Instance.GetCurElementCfg().name;
-        let path = "element/skillz_ball" + typeStr +"/spriteFrame";
+        let path = "element/cat_" + typeStr +"/spriteFrame";
         resources.load(path, SpriteFrame, (err1: Error, loadedRes)=>{
             this.image.spriteFrame = loadedRes
         })

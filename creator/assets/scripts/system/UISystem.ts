@@ -19,7 +19,7 @@ class _UISystem {
         this.mask.active = false
     }
 
-    show(uiName){
+    show(uiName, uiStatic){
         if(this.uiMap[uiName] === true){
             return
         }
@@ -34,11 +34,17 @@ class _UISystem {
         resources.load("ui/"+uiName, Prefab, (err1: Error, loadedRes)=>{
             let layer = instantiate(loadedRes)
             layer.active = true;
+            //@ts-ignore
+            layer.uiStatic = uiStatic;
+            this.uiMap[uiName] = layer
             this.uiRoot.addChild(layer)
         })
     }
 
     hide(uiName){
+        if(this.uiMap[uiName] === true){
+            return
+        }
         this.uiMap[uiName].active = false
         this.uiList.pop()
         if(this.uiList.length <= 0){

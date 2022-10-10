@@ -5,6 +5,7 @@ import { UtilsSystem } from './UtilsSystem';
 import { ResultUI } from '../ui/ResultUI';
 import { UISystem } from './UISystem';
 import { PlayerData } from './PlayerData';
+import { LevelUI } from '../ui/LevelUI';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
@@ -38,8 +39,9 @@ class _GameSystem {
             this.gamePrefab.parent = director.getScene()
             this.elementRoot = this.gamePrefab.getChildByName("elementRoot")
             this.initCachList()
-            this.StartLevel()
+            //this.StartLevel()
             UISystem.init()
+            LevelUI.show()
         })
     }
 
@@ -189,7 +191,7 @@ class _GameSystem {
         }
         this.glassList = [];
 
-        let levelId = 1
+        let levelId = PlayerData.data.curLevel
         let levelCfg = this.levelCfgMap[levelId]
         let num = levelCfg.length;
         let addGlass = 0//PlayerPrefs.Getlet(STORAGE_ADD_GLASS_KEY, 0);

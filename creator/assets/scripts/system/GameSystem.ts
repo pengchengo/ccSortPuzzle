@@ -4,6 +4,7 @@ import {Element} from "../com/Element"
 import { UtilsSystem } from './UtilsSystem';
 import { ResultUI } from '../ui/ResultUI';
 import { UISystem } from './UISystem';
+import { PlayerData } from './PlayerData';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
@@ -24,6 +25,7 @@ class _GameSystem {
 
     levelCfgMap = null
     Init(){
+        PlayerData.init()
         this.ReadLevelCfg()
         this.LoadGamePrefab()
     }

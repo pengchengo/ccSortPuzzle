@@ -25,7 +25,7 @@ export class LevelUI extends BaseUI {
 
     onClickItem(item, idx){
         console.log("idx=",idx)
-        PlayerData.data.curLevel = idx+1
+        PlayerData.changeCurLevel(idx+1)
         this.hide()
         GameSystem.StartLevel()
     }

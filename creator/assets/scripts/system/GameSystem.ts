@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3, TransformBit, UITransform } from 'cc';
+import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3, TransformBit, UITransform, Game } from 'cc';
 import { Glass, WaterType } from '../com/Glass';
 import {Element} from "../com/Element"
 import { UtilsSystem } from './UtilsSystem';
@@ -9,6 +9,7 @@ import { LevelUI } from '../ui/LevelUI';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
+    maxLevel = 0
     elementRoot
     NOT_SELECT = -1;
     selectIndex;
@@ -39,9 +40,9 @@ class _GameSystem {
             this.gamePrefab.parent = director.getScene()
             this.elementRoot = this.gamePrefab.getChildByName("elementRoot")
             this.initCachList()
-            //this.StartLevel()
+            this.StartLevel()
             UISystem.init()
-            LevelUI.show()
+            //LevelUI.show()
         })
     }
 
@@ -79,6 +80,7 @@ class _GameSystem {
         }
         resources.load("cfg/levelCfg", JsonAsset, (err1: Error, loadedRes) => {
             this.levelCfgMap = loadedRes.json
+            GameSystem.maxLevel = UtilsSystem.getMapNum(this.levelCfgMap)
         })
     }
 
@@ -187,7 +189,7 @@ class _GameSystem {
 
         for(let i = 0; i < this.glassList.length; i++){
             this.glassList[i].node.active = (false);
-            this.cacheGlassList.push(this.elementList[i]);
+            this.cacheGlassList.push(this.glassList[i]);
         }
         this.glassList = [];
 

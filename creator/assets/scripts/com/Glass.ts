@@ -320,7 +320,7 @@ export class Glass extends Component {
         if (!this.curMat)
         {
             this.curMat = this.myManager.GetMat();
-            this.curMat.worldPosition = this.node.worldPosition;
+            this.curMat.scale = this.node.scale;
         }
         this.curMat.setSiblingIndex(99)
         this.curMat.worldPosition = this.node.worldPosition;

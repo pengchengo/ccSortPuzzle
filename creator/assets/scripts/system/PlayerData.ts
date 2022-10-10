@@ -2,6 +2,7 @@
 import { sys } from "cc";
 import { EventDef } from "../event/TYEvent";
 import { TYEventDispatcher } from "../event/TYEventDispatcher";
+import { MainUI } from "../ui/MainUI";
 
 export class _PlayerData {
     PlayerDataStorageKey = "PlayerDataStorageKey"
@@ -93,6 +94,12 @@ export class _PlayerData {
     resetCoin(){
         this.data.coin = 0
         this.saveData()
+    }
+
+    changeCurLevel(levelId){
+        this.data.curLevel = levelId
+        this.saveData()
+        MainUI.Inst.refreshLevel()
     }
 
     saveData(){

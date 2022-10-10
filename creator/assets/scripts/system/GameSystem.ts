@@ -1,9 +1,13 @@
 import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3, TransformBit, UITransform } from 'cc';
 import { Glass, WaterType } from '../com/Glass';
 import {Element} from "../com/Element"
+import { UtilsSystem } from './UtilsSystem';
+import { ResultUI } from '../ui/ResultUI';
+import { UISystem } from './UISystem';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
+    elementRoot
     NOT_SELECT = -1;
     selectIndex;
     moveIndexMap = {}
@@ -30,8 +34,10 @@ class _GameSystem {
             this.gamePrefab = instantiate(loadedRes)
             this.gamePrefab.active = true;
             this.gamePrefab.parent = director.getScene()
+            this.elementRoot = this.gamePrefab.getChildByName("elementRoot")
             this.initCachList()
             this.StartLevel()
+            UISystem.init()
         })
     }
 
@@ -39,7 +45,7 @@ class _GameSystem {
         for(let i = 0; i < 14; i++){
             let glass = instantiate(this.gamePrefab.getChildByName("Glass"))
             glass.active = false
-            this.gamePrefab.addChild(glass)
+            this.elementRoot.addChild(glass)
             let glassCpt = glass.getComponent(Glass)
             this.cacheGlassList.push(glassCpt)
             //instantiate()
@@ -47,7 +53,7 @@ class _GameSystem {
         for(let i = 0; i < 7; i++){
             let element = instantiate(this.gamePrefab.getChildByName("Element"))
             element.active = false
-            this.gamePrefab.addChild(element)
+            this.elementRoot.addChild(element)
             let elementCpt = element.getComponent(Element)
             this.cacheElementList.push(elementCpt)
             //instantiate()
@@ -56,7 +62,7 @@ class _GameSystem {
         for(let i = 0; i < 7; i++){
             let mat = instantiate(this.gamePrefab.getChildByName("Mat"))
             mat.active = false
-            this.gamePrefab.addChild(mat)
+            this.elementRoot.addChild(mat)
             this.cacheMatList.push(mat)
             //instantiate()
         }
@@ -528,6 +534,31 @@ class _GameSystem {
                 break;
             }
         }
+    }
+
+    public CheckFinish()
+    {
+        if(this.moveElementNum > 0)
+        {
+            return;
+        }
+        for (let i = 0; i < this.glassList.length; i++)
+        {
+            let glass = this.glassList[i];
+            if(!glass.isEmpty() && !glass.IsFinish())
+            {
+                return;
+            }
+        }
+        /*if(this.CanOneGlass()){
+            let nowTime = TimeManager.Instance.GetTimeStampMs();
+            let useTime = (int)(TimeManager.Instance.GetTimeStampMs() - levelBeginTime);
+            NetManager.Instance.BiLevelTime(StorageManager.Instance.GetCurLevel(), useTime);
+        }*/
+
+        UtilsSystem.scheduleOnce(1000, ()=>{
+            ResultUI.show()
+        })
     }
 }
 

@@ -187,6 +187,7 @@ export class Glass extends Component {
         /*AudioManager.Instance.PlaySound("chenggong"); TODO
         StartCoroutine(PlayFinishAnim());
         GameSystem.CheckFinish();*/
+        GameSystem.CheckFinish();
     }
 
     public RefreshIndexImage(i)

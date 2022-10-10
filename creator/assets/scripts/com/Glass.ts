@@ -239,9 +239,9 @@ export class Glass extends Component {
         }
         //var anim = this.moveElement.transform.DOMoveY(this.moveUpPos.y, 0.1f);
         this.isPlayingAnim = true;
-        Tween.stopAllByTarget(this.moveElement)
+        Tween.stopAllByTarget(this.moveElement.node)
         tween(this.moveElement.node)
-            .to(1.0, { worldPosition: new Vec3(this.moveElement.node.worldPosition.x, this.moveUpPos.y, this.moveElement.node.worldPosition.z) })
+            .to(0.1, { worldPosition: new Vec3(this.moveElement.node.worldPosition.x, this.moveUpPos.y, this.moveElement.node.worldPosition.z) })
             .call(()=>{
                 this.isPlayingAnim = false;
                 if (firstIndex == 0)
@@ -272,9 +272,9 @@ export class Glass extends Component {
                 this.AddMat();
             }
             this.isPlayingAnim = true;
-            Tween.stopAllByTarget(this.moveElement)
-            tween(this.moveElement)
-                .to(1.0, { position: new Vec3(this.moveElement.worldPosition.x, firstCat.worldPosition.y, this.moveElement.worldPosition.z) })
+            Tween.stopAllByTarget(this.moveElement.node)
+            tween(this.moveElement.node)
+                .to(0.1, { worldPosition: new Vec3(this.moveElement.node.worldPosition.x, firstCat.worldPosition.y, this.moveElement.node.worldPosition.z) })
                 .call(()=>{
                     if (firstIndex == 0)
                     {
@@ -356,6 +356,53 @@ export class Glass extends Component {
     public IsFinish()
     {
         return this.isFinish;
+    }
+
+    public getTopWaterType()
+    {
+        if(this.myWaterList.length == 0)
+        {
+            return WaterType.Empty;
+        }
+        else
+        {
+            return this.myWaterList[this.myWaterList.length - 1];
+        }
+    }
+
+    public getWaterList()
+    {
+        return this.myWaterList;
+    }
+
+    public getLeftNum()
+    {
+        return 4 - this.myWaterList.length;
+    }
+
+    public RefreshIndex(i)
+    {
+        if (i < this.myWaterList.length)
+        {
+            this.imageList[i].active = (true);
+            let ele = this.imageList[i].getComponent(Element);
+            ele.Refresh(this.myWaterList[i]);
+            ele.PlayAnim();
+        }
+    }
+
+    public CreateTopMoveElement()
+    {
+        var firstIndex = this.myWaterList.length - 1;
+        let element = this.myManager.GetMoveElement();
+        element.node.scale = this.node.scale;
+        element.node.active = (true);
+        element.Refresh(this.myWaterList[firstIndex]);
+        var firstCat = this.imageList[firstIndex];
+        firstCat.active = (false);
+        var curWorldPos = firstCat.worldPosition;
+        element.node.worldPosition = new Vec3(curWorldPos.x, curWorldPos.y, curWorldPos.z);
+        return element;
     }
 }
 

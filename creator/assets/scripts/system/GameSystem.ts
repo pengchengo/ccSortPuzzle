@@ -340,14 +340,14 @@ class _GameSystem {
         var moveEndPos = desGlass.GetMoveEndPos();
         Tween.stopAllByTarget(eleObj)
         tween(eleObj)
-            .to(0.2, { position: desGlass.GetMovePassPos() })
+            .to(0.2, { worldPosition: desGlass.GetMovePassPos() })
             .call(()=>{
                 if (isEmpty)
                 {
                     desGlass.AddMat();
                 }
             })
-            .to(0.2, { position: moveEndPos })
+            .to(0.2, { worldPosition: moveEndPos })
             .call(()=>{
                 if (isEmpty)
                 {
@@ -431,7 +431,7 @@ class _GameSystem {
             let eleObj = null;
             let isEmpty = false;
             var moveEndPos = desGlass.GetMoveEndPos();
-            let moveEndFuc = ()=>{
+            let moveEndFuc = (_desUpdateIndex)=>{
                 if (isEmpty)
                 {
                     desGlass.RemoveMat();
@@ -440,7 +440,8 @@ class _GameSystem {
                 this.moveElementNum = this.moveElementNum - 1;
                 callNum = callNum - 1;
                 this.CacheMoveElement(ele);
-                desGlass.RefreshIndex(desUpdateIndex);
+                console.log("_desUpdateIndex=",_desUpdateIndex)
+                desGlass.RefreshIndex(_desUpdateIndex);
                 if(callNum <= 0){
                     desGlass.CheckFinish();
                     if(!this.checkCanMove()){
@@ -451,51 +452,56 @@ class _GameSystem {
                 this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
             }
             if (i == 1){
-                ele = srcGlass.GetMoveElement();
-                eleObj = ele.gameObject;
-                isEmpty = desGlass.isEmpty();
-                desWaterList.push(srcType);
-                scrWaterList.pop();
-                srcGlass.RemoveMoveElement(ele);
-                srcGlass.SetIsMoveUp(false);
-                Tween.stopAllByTarget(eleObj)
-                tween(eleObj)
-                    .to(0.2, { position: desGlass.GetMovePassPos() })
-                    .call(()=>{
-                        if (isEmpty)
-                        {
-                            desGlass.AddMat();
-                        }
-                    })
-                    .to(0.2, { position: moveEndPos })
-                    .call(()=>{
-                        moveEndFuc()
-                    })
-                    .start()
+                let moveFirstFuc = (_desUpdateIndex)=>{
+                    ele = srcGlass.GetMoveElement();
+                    eleObj = ele.node;
+                    isEmpty = desGlass.isEmpty();
+                    desWaterList.push(srcType);
+                    scrWaterList.pop();
+                    srcGlass.RemoveMoveElement(ele);
+                    srcGlass.SetIsMoveUp(false);
+                    Tween.stopAllByTarget(eleObj)
+                    tween(eleObj)
+                        .to(0.2, { worldPosition: desGlass.GetMovePassPos() })
+                        .call(()=>{
+                            if (isEmpty)
+                            {
+                                desGlass.AddMat();
+                            }
+                        })
+                        .to(0.2, { worldPosition: moveEndPos })
+                        .call(()=>{
+                            moveEndFuc(_desUpdateIndex)
+                        })
+                        .start()
+                }
+                moveFirstFuc(desWaterList.length)
             }
             else{
-                ele = srcGlass.CreateTopMoveElement();
-                eleObj = ele.gameObject;
-                desWaterList.push(srcType);
-                scrWaterList.pop();
-                Tween.stopAllByTarget(eleObj)
-                tween(eleObj)
-                    .delay((i-2)*0.2)
-                    .to(0.2, { position: srcGlass.GetMoveUpPos() })
-                    .to(0.2, { position: desGlass.GetMovePassPos() })
-                    .call(()=>{
-                        if (isEmpty)
-                        {
-                            desGlass.AddMat();
-                        }
-                    })
-                    .to(0.2, { position: moveEndPos })
-                    .call(()=>{
-                        moveEndFuc()
-                    })
-                    .start()
+                let moveNextFuc = (_desUpdateIndex)=>{
+                    ele = srcGlass.CreateTopMoveElement();
+                    eleObj = ele.node;
+                    desWaterList.push(srcType);
+                    scrWaterList.pop();
+                    Tween.stopAllByTarget(eleObj)
+                    tween(eleObj)
+                        .delay((i-2)*0.2)
+                        .to(0.2, { worldPosition: srcGlass.GetMoveUpPos() })
+                        .to(0.2, { worldPosition: desGlass.GetMovePassPos() })
+                        .call(()=>{
+                            if (isEmpty)
+                            {
+                                desGlass.AddMat();
+                            }
+                        })
+                        .to(0.2, { worldPosition: moveEndPos })
+                        .call(()=>{
+                            moveEndFuc(_desUpdateIndex)
+                        })
+                        .start()
+                }
+                moveNextFuc(desWaterList.length)
             }
-            var desUpdateIndex = desWaterList.Count - 1;
             this.moveElementNum = this.moveElementNum + 1;
         }
     }

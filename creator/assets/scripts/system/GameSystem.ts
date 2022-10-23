@@ -320,7 +320,7 @@ class _GameSystem {
     public CacheMoveElement(ele)
     {
         for(let i = 0; i < this.elementList.length; i++){
-            if(ele == this.elementList[ele]){
+            if(ele == this.elementList[i]){
                 this.elementList.splice(i, 1)
                 break
             }
@@ -439,11 +439,9 @@ class _GameSystem {
         var desWaterList = desGlass.getWaterList();
         var callNum = moveNum;
         for(let i = 1; i <= moveNum; i++){
-            let ele = null;
-            let eleObj = null;
             let isEmpty = false;
             var moveEndPos = desGlass.GetMoveEndPos();
-            let moveEndFuc = (_desUpdateIndex)=>{
+            let moveEndFuc = (_desUpdateIndex, ele)=>{
                 if (isEmpty)
                 {
                     desGlass.RemoveMat();
@@ -465,8 +463,8 @@ class _GameSystem {
             }
             if (i == 1){
                 let moveFirstFuc = (_desUpdateIndex)=>{
-                    ele = srcGlass.GetMoveElement();
-                    eleObj = ele.node;
+                    let ele = srcGlass.GetMoveElement();
+                    let eleObj = ele.node;
                     isEmpty = desGlass.isEmpty();
                     desWaterList.push(srcType);
                     scrWaterList.pop();
@@ -483,7 +481,7 @@ class _GameSystem {
                         })
                         .to(0.2, { worldPosition: moveEndPos })
                         .call(()=>{
-                            moveEndFuc(_desUpdateIndex)
+                            moveEndFuc(_desUpdateIndex, ele)
                         })
                         .start()
                 }
@@ -491,8 +489,8 @@ class _GameSystem {
             }
             else{
                 let moveNextFuc = (_desUpdateIndex)=>{
-                    ele = srcGlass.CreateTopMoveElement();
-                    eleObj = ele.node;
+                    let ele = srcGlass.CreateTopMoveElement();
+                    let eleObj = ele.node;
                     desWaterList.push(srcType);
                     scrWaterList.pop();
                     Tween.stopAllByTarget(eleObj)
@@ -508,7 +506,7 @@ class _GameSystem {
                         })
                         .to(0.2, { worldPosition: moveEndPos })
                         .call(()=>{
-                            moveEndFuc(_desUpdateIndex)
+                            moveEndFuc(_desUpdateIndex, ele)
                         })
                         .start()
                 }

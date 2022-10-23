@@ -27,6 +27,10 @@ export class ResultUI extends BaseUI {
         }else{
             this.btnNext.active = true
         }
+        if((PlayerData.data.curLevel + 1) > PlayerData.data.maxLevel){
+            PlayerData.data.maxLevel = PlayerData.data.curLevel + 1
+            PlayerData.saveData()
+        }
     }
 
     onClickNext(){

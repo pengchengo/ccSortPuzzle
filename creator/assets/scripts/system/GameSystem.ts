@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3, TransformBit, UITransform, Game } from 'cc';
+import { _decorator, Component, Node, resources,JsonAsset, instantiate, Prefab, director, Tween, tween, Vec3, TransformBit, UITransform, Game, sys } from 'cc';
 import { Glass, WaterType } from '../com/Glass';
 import {Element} from "../com/Element"
 import { UtilsSystem } from './UtilsSystem';
@@ -7,10 +7,12 @@ import { UISystem } from './UISystem';
 import { PlayerData } from './PlayerData';
 import { LevelUI } from '../ui/LevelUI';
 import { AudioSystem } from './AudioSystem';
+import { MainUI } from '../ui/MainUI';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
     maxLevel = 0
+    curBackNum = 0
     elementRoot
     NOT_SELECT = -1;
     selectIndex;
@@ -170,7 +172,12 @@ class _GameSystem {
         return glass;
     }
 
+    Restart(){
+        this.StartLevel()
+    }
+
     StartLevel(){
+        this.curBackNum = 0
         this.moveElementNum = 0
         this.moveIndexMap = {}
         this.history = []
@@ -197,8 +204,13 @@ class _GameSystem {
         let levelId = PlayerData.data.curLevel
         let levelCfg = this.levelCfgMap[levelId]
         let num = levelCfg.length;
-        let addGlass = 0//PlayerPrefs.Getlet(STORAGE_ADD_GLASS_KEY, 0);
-        if(addGlass == 1)
+        let addGlass = sys.localStorage.getItem("STORAGE_ADD_GLASS_KEY") as any
+        if(addGlass && addGlass != "undefined"){
+            addGlass = true
+        }else{
+            addGlass = false
+        }
+        if(addGlass)
         {
             num = num + 1;
         }
@@ -212,6 +224,10 @@ class _GameSystem {
         {
             this.InitOneGlass(num - 1, posList, []);
         }
+
+        if(MainUI.Inst){
+            MainUI.Inst.UpdateAddPlateMask(addGlass);
+        }   
     }
 
     SelectOne(index){
@@ -564,6 +580,79 @@ class _GameSystem {
         UtilsSystem.scheduleOnce(1000, ()=>{
             ResultUI.show()
         })
+    }
+
+    public AddBackNum()
+    {
+        this.curBackNum = 0;
+        MainUI.Inst.RefreshBackTxt();
+    }
+
+    public AddOneGlass()
+    {
+        let addGlass = sys.localStorage.getItem("STORAGE_ADD_GLASS_KEY");
+        if(addGlass && addGlass != "undefined")
+        {
+            //UIManager.Instance.ShowTip(CommonStr.alreadyAddGlass);
+            return;
+        }
+        sys.localStorage.setItem("STORAGE_ADD_GLASS_KEY", "1");
+        var posList = this.GetPositionList(this.glassList.length+1);
+        for (let i = 0; i < this.glassList.length; i++)
+        {
+            this.glassList[i].UpdatePos(posList);
+        }
+        this.InitOneGlass(this.glassList.length, posList, []);
+        //UIManager.Instance.uiController.HideTishi();
+    }
+
+    ChangeToLevel()
+    {
+        sys.localStorage.setItem("STORAGE_ADD_GLASS_KEY", undefined);
+        this.StartLevel();
+    }
+
+    public HasBackNum()
+    {
+        if(this.curBackNum >= MainUI.MAX_BACK_NUM){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    public BackPath()
+    {
+        if (this.curBackNum >= MainUI.MAX_BACK_NUM)
+        {
+            //WatchAddBack();
+            return;
+        }
+        if(this.history.length == 0)
+        {
+            return;
+        }
+        if (this.selectIndex != this.NOT_SELECT)
+        {
+            this.glassList[this.selectIndex].QuickDown();
+            this.selectIndex = this.NOT_SELECT;
+        }
+        this.curBackNum = this.curBackNum + 1;
+        MainUI.Inst.RefreshBackTxt();
+        var movePath = this.history.pop();
+
+        var srcGlass = this.glassList[movePath.src];
+        var desGlass = this.glassList[movePath.des];
+        var scrWaterList = srcGlass.getWaterList();
+        var desWaterList = desGlass.getWaterList();
+        for (var i = 0; i < movePath.num; i++)
+        {
+            var lastDes = desWaterList.pop();
+            scrWaterList.push(lastDes);
+        }
+        desGlass.isFinish = false;
+        srcGlass.Refresh();
+        desGlass.Refresh();
+        //UIManager.Instance.uiController.HideTishi();
     }
 }
 

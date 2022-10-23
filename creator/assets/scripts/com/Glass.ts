@@ -405,5 +405,27 @@ export class Glass extends Component {
         element.node.worldPosition = new Vec3(curWorldPos.x, curWorldPos.y, curWorldPos.z);
         return element;
     }
+
+    public UpdatePos(posList)
+    {
+        this.UpdateScale(posList.Count);
+        let pos = posList[this.myIndex];
+        const size = view.getVisibleSize();
+        this.startPosY = pos[1] + size.height / 2;
+        this.node.position = new Vec3(pos[0]/this.fitScale, this.startPosY - size.height / 2, 0);
+
+        this.flyPassPos = this.flyPass.worldPosition;
+        this.moveUpPos = this.moveUpObj.worldPosition;
+        if (this.isMoveUp)
+        {
+            if (this.moveElement)
+            {
+                this.moveElement.node.worldPosition = this.moveUpPos;
+            }
+        }
+        else
+        {
+        }
+    }
 }
 

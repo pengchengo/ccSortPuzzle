@@ -21,13 +21,21 @@ export class LevelUI extends BaseUI {
 
     onRenderItem(item: Node, idx: number){
         item.getChildByName("title").getComponent(Label).string = "Level " + (idx+1)
+        if(idx < PlayerData.data.maxLevel){
+            item.getChildByName("mask").active = false
+        }else{
+            item.getChildByName("mask").active = true
+        }
     }
 
     onClickItem(item, idx){
         console.log("idx=",idx)
+        if(idx >= PlayerData.data.maxLevel){
+            return
+        }
         PlayerData.changeCurLevel(idx+1)
         this.hide()
-        GameSystem.StartLevel()
+        GameSystem.ChangeToLevel()
     }
 
     onClickBack(){

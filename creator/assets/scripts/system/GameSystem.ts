@@ -6,6 +6,7 @@ import { ResultUI } from '../ui/ResultUI';
 import { UISystem } from './UISystem';
 import { PlayerData } from './PlayerData';
 import { LevelUI } from '../ui/LevelUI';
+import { AudioSystem } from './AudioSystem';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
@@ -236,7 +237,7 @@ class _GameSystem {
         {
             this.selectIndex = this.NOT_SELECT;
             this.glassList[index].MoveDown();
-            //AudioManager.Instance.PlaySound("tan");
+            AudioSystem.playSound("tan");
         }
         else
         {
@@ -250,7 +251,7 @@ class _GameSystem {
                 this.glassList[this.selectIndex].MoveDown();
                 this.glassList[index].MoveUp();
                 this.selectIndex = index;
-                //AudioManager.Instance.PlaySound("tan");
+                AudioSystem.playSound("tan");
                 return;
             }
             var srcGlass = this.glassList[this.selectIndex];
@@ -304,7 +305,7 @@ class _GameSystem {
                     this.glassList[index].MoveUp();
                     this.selectIndex = index;
                 }
-                //AudioManager.Instance.PlaySound("tan");
+                AudioSystem.playSound("tan");
             }
         }
     }
@@ -370,7 +371,7 @@ class _GameSystem {
                 this.CacheMoveElement(ele);
                 desGlass.RefreshIndex(desUpdateIndex);
                 desGlass.CheckFinish();
-                //AudioManager.Instance.PlaySound("tan");
+                AudioSystem.playSound("tan");
                 this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
                 if(!this.checkCanMove()){
                     //UIManager.Instance.uiController.ShowTishi();
@@ -458,7 +459,7 @@ class _GameSystem {
                         //UIManager.Instance.uiController.ShowTishi();
                     }
                 }
-                //AudioManager.Instance.PlaySound("tan");
+                AudioSystem.playSound("tan");
                 this.moveIndexMap[desIndex] = this.moveIndexMap[desIndex] - 1;
             }
             if (i == 1){

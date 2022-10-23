@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Vec3, view, tween, Tween } from 'cc';
+import { AudioSystem } from '../system/AudioSystem';
 import { GameSystem } from '../system/GameSystem';
 import { Element } from './Element';
 const { ccclass, property } = _decorator;
@@ -184,9 +185,8 @@ export class Glass extends Component {
             }
         }
         this.isFinish = true;
-        /*AudioManager.Instance.PlaySound("chenggong"); TODO
-        StartCoroutine(PlayFinishAnim());
-        GameSystem.CheckFinish();*/
+        AudioSystem.playSound("chenggong");
+        //StartCoroutine(PlayFinishAnim());
         GameSystem.CheckFinish();
     }
 

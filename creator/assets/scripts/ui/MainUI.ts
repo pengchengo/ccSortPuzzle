@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, resources, Sprite, SpriteFrame, Label } from 'cc';
+import { _decorator, Component, Node, resources, Sprite, SpriteFrame, Label, AudioSource } from 'cc';
+import { AudioSystem } from '../system/AudioSystem';
 import { PlayerData } from '../system/PlayerData';
 import { UISystem } from '../system/UISystem';
 import { LevelUI } from './LevelUI';
@@ -12,9 +13,17 @@ export class MainUI extends Component {
     @property({ type: Label })
     public levelLb: Label;
 
+    @property({ type: AudioSource })
+    public bgmSource: AudioSource;
+
+    @property({ type: AudioSource })
+    public soundSource: AudioSource;
+
     start() {
         MainUI.Inst = this
         this.refreshLevel()
+        AudioSystem.init(this.bgmSource, this.soundSource)
+        AudioSystem.playMusic("game")
     }
 
     onEnable(){
@@ -30,7 +39,7 @@ export class MainUI extends Component {
     }
 
     refreshLevel(){
-        this.levelLb.string = PlayerData.data.curLevel+""
+        this.levelLb.string = "Level "+PlayerData.data.curLevel
     }
 
     update(deltaTime: number) {

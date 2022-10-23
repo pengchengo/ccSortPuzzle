@@ -53,6 +53,12 @@ export class _PlayerData {
         if(!this.data.buyTimeList){
             this.data.buyTimeList = []
         }
+        if(this.data.musicVolume == undefined){
+            this.data.musicVolume = 1
+        }
+        if(this.data.soundVolume == undefined){
+            this.data.soundVolume = 1
+        }
     }
 
     initData(){
@@ -67,6 +73,8 @@ export class _PlayerData {
         this.data.bgList = [];
         this.data.buyIdList = [];
         this.data.buyTimeList = [];
+        this.data.musicVolume = 1;
+        this.data.soundVolume = 1;
         this.saveData()
     }
 

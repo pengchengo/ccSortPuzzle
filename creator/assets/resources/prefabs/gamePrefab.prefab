@@ -2356,7 +2356,7 @@
     },
     "component": "",
     "_componentId": "b82cf1zGj9NeJlSQQXu4HcH",
-    "handler": "onClickLevel",
+    "handler": "onClickSetting",
     "customEventData": ""
   },
   {

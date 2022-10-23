@@ -1,17 +1,20 @@
 import { AudioClip, AudioSource, resources } from "cc"
+import { PlayerData } from "./PlayerData"
 
 
 export class _AudioSystem {
-    bgmSource:AudioSource
+    musicSource:AudioSource
     soundSource:AudioSource
     curMusicId
     curMusicName
     curEffectMap: Map<number, string> = new Map<number, string>()
 
-    init(bgmSource, soundSource)
+    init(musicSource, soundSource)
     {
-        this.bgmSource = bgmSource
+        this.musicSource = musicSource
+        this.musicSource.volume = PlayerData.data.musicVolume
         this.soundSource = soundSource
+        this.soundSource.volume = PlayerData.data.soundVolume
     }
 
     playMusic(res: string, loop = true){
@@ -24,7 +27,7 @@ export class _AudioSystem {
 
     stopMusic(){
         this.curMusicName = null
-        this.bgmSource.pause()
+        this.musicSource.pause()
     }
 
     playSound(res: string, loop = false, callback: (audioId: number) => void = null){
@@ -45,8 +48,8 @@ export class _AudioSystem {
         const clip = resources.get(url, AudioClip) as AudioClip
         const playFn = (clip: AudioClip) => {
             if (isMusic) {
-                this.bgmSource.clip = clip
-                this.curMusicId = this.bgmSource.play()
+                this.musicSource.clip = clip
+                this.curMusicId = this.musicSource.play()
                 this.curMusicName = res
             } else {
                 this.soundSource.playOneShot(clip)
@@ -63,6 +66,16 @@ export class _AudioSystem {
         } else {
             playFn(clip)
         }
+    }
+
+    updateVolume(){
+        if(PlayerData.data.musicVolume != this.musicSource.volume){
+            PlayerData.data.musicVolume = this.musicSource.volume
+        }
+        if(PlayerData.data.soundVolume != this.soundSource.volume){
+            PlayerData.data.soundVolume = this.soundSource.volume
+        }
+        PlayerData.saveData()
     }
 }
 

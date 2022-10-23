@@ -30,6 +30,10 @@ export class LevelUI extends BaseUI {
         GameSystem.StartLevel()
     }
 
+    onClickBack(){
+        this.hide()
+    }
+
     update(deltaTime: number) {
         
     }

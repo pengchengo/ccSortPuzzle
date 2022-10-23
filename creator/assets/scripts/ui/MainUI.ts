@@ -3,6 +3,7 @@ import { AudioSystem } from '../system/AudioSystem';
 import { PlayerData } from '../system/PlayerData';
 import { UISystem } from '../system/UISystem';
 import { LevelUI } from './LevelUI';
+import { SettingUI } from './SettingUI';
 const { ccclass, property, menu} = _decorator;
 
 @ccclass
@@ -36,6 +37,10 @@ export class MainUI extends Component {
 
     onClickLevel(){
         LevelUI.show()
+    }
+
+    onClickSetting(){
+        SettingUI.show()
     }
 
     refreshLevel(){

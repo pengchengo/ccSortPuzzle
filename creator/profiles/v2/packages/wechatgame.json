@@ -1,15 +1,16 @@
 {
   "common": {
     "outputName": "wechatgame",
-    "mainBundleCompressionType": "merge_dep",
-    "platform": "wechatgame"
+    "mainBundleCompressionType": "subpackage",
+    "platform": "wechatgame",
+    "mainBundleIsRemote": false
   },
   "options": {
     "wechatgame": {
-      "startSceneAssetBundle": false,
+      "startSceneAssetBundle": true,
       "orientation": "portrait",
       "appid": "wxcc4fd54ff02b52ec",
-      "separateEngine": false,
+      "separateEngine": true,
       "wasm": "wasm",
       "enabelWebGL2": "off",
       "__version__": "1.0.2"

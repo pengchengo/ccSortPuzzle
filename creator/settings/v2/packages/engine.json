@@ -76,7 +76,7 @@
         "_value": false
       },
       "particle-2d": {
-        "_value": false
+        "_value": true
       },
       "audio": {
         "_value": true
@@ -119,6 +119,7 @@
       "gfx-webgl",
       "gfx-webgl2",
       "intersection-2d",
+      "particle-2d",
       "tween",
       "ui"
     ],

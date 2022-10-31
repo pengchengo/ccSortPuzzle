@@ -54,6 +54,7 @@ class _GameSystem {
             let glass = instantiate(this.gamePrefab.getChildByName("Glass"))
             glass.active = false
             this.elementRoot.addChild(glass)
+            glass.position.y = 13.6
             let glassCpt = glass.getComponent(Glass)
             this.cacheGlassList.push(glassCpt)
             //instantiate()

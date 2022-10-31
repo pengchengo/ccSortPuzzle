@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources, Sprite, SpriteFrame, Button } from 'cc';
+import { _decorator, Component, Node, resources, Sprite, SpriteFrame, Button, sys } from 'cc';
 import { GameSystem } from '../system/GameSystem';
 import { PlayerData } from '../system/PlayerData';
 import { UISystem } from '../system/UISystem';
@@ -36,6 +36,7 @@ export class ResultUI extends BaseUI {
     onClickNext(){
         PlayerData.changeCurLevel(PlayerData.data.curLevel+1)
         this.hide()
+        sys.localStorage.setItem("STORAGE_ADD_GLASS_KEY", undefined);
         GameSystem.StartLevel()
     }
 }

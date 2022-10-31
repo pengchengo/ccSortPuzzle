@@ -1,13 +1,14 @@
-import { _decorator, Component, Node, resources, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, resources, Sprite, SpriteFrame,Animation } from 'cc';
 import { WaterType } from './Glass';
 const { ccclass, property } = _decorator;
 
 @ccclass('Element')
 export class Element extends Component {
-    public m_Animation;
 
     @property({ type: Sprite })
     public image: Sprite;
+    @property({ type: Animation })
+    public m_animation: Animation;
 
     curType;
 
@@ -49,7 +50,7 @@ export class Element extends Component {
 
     public PlayAnim()
     {
-        //m_Animation.Play("Element_ani");
+        this.m_animation.play("yuansu");
     }
 }
 

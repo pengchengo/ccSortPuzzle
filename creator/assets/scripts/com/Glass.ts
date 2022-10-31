@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, view, tween, Tween } from 'cc';
+import { _decorator, Component, Node, Vec3, view, tween, Tween, ParticleSystem2D } from 'cc';
 import { AudioSystem } from '../system/AudioSystem';
 import { GameSystem } from '../system/GameSystem';
 import { Element } from './Element';
@@ -37,6 +37,8 @@ export class Glass extends Component {
     public flyPass: Node;
     @property({ type: [Node] })
     public imageList: Node[] = [];
+    @property({ type: ParticleSystem2D })
+    public finishParticle: ParticleSystem2D;
 
     myWaterList = [];
     startXList = [];
@@ -187,7 +189,19 @@ export class Glass extends Component {
         this.isFinish = true;
         AudioSystem.playSound("chenggong");
         //StartCoroutine(PlayFinishAnim());
+        this.PlayFinishAnim()
         GameSystem.CheckFinish();
+    }
+
+    PlayFinishAnim(){
+        this.finishParticle.node.active = true
+        this.finishParticle.resetSystem()
+        tween(this.finishParticle.node)
+            .delay(2)
+            .call(()=>{
+                this.finishParticle.node.active = false
+            })
+            .start()
     }
 
     public RefreshIndexImage(i)

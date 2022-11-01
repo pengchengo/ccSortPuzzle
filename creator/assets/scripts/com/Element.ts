@@ -32,10 +32,17 @@ export class Element extends Component {
         //var name = GameManager.Instance.GetCurElementCfg().name;
         let path = "element/cat_" + typeStr +"/spriteFrame";
         this.image.node.active = false
-        resources.load(path, SpriteFrame, (err1: Error, loadedRes)=>{
-            this.image.spriteFrame = loadedRes
+        let frame = resources.get(path, SpriteFrame)
+        if(frame){
+            this.image.spriteFrame = frame
             this.image.node.active = true
-        })
+        }else{
+            resources.load(path, SpriteFrame, (err1: Error, loadedRes)=>{
+                this.image.spriteFrame = loadedRes
+                this.image.node.active = true
+            })
+        }
+        
         //Sprite sprite = Resources.Load(path, typeof(Sprite)) as Sprite;
         //image.overrideSprite = sprite;
     }

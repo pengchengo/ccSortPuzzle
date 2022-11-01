@@ -54,7 +54,7 @@ class _GameSystem {
             let glass = instantiate(this.gamePrefab.getChildByName("Glass"))
             glass.active = false
             this.elementRoot.addChild(glass)
-            glass.position.y = 13.6
+            glass.position.y = 0
             let glassCpt = glass.getComponent(Glass)
             this.cacheGlassList.push(glassCpt)
             //instantiate()
@@ -96,7 +96,7 @@ class _GameSystem {
     {
         let lrDistance = 80;
         //let maxWidth = UnityEngine.Screen.width - lrDistance*2;
-        let contentWidth = 768;
+        let contentWidth = 750;
         if (this.isPad())
         {
             //TODO

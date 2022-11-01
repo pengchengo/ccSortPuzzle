@@ -19,7 +19,7 @@
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2022-10-26 12:23 Build success in 8366 ms!",
+        "message": "2022-11-1 14:31 Build success in 15532 ms!",
         "options": {
           "name": "creator",
           "platform": "wechatgame",
@@ -66,7 +66,7 @@
           },
           "__version__": "1.3.3"
         },
-        "time": "2022-10-26 12:23",
+        "time": "2022-11-1 14:31",
         "dirty": false
       }
     }

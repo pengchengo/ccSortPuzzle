@@ -73,7 +73,7 @@ export class Glass extends Component {
         const size = view.getVisibleSize();
         this.startPosY = pos[1] + size.height / 2;
 
-        var allNum = posList.Count;
+        var allNum = posList.length;
         this.UpdateScale(allNum);
 
         this.fitScale = 1;// UIManager.Instance.glassFitScale;
@@ -96,7 +96,7 @@ export class Glass extends Component {
     public UpdateScale(allNum)
     {
         let scale = 1;
-        if (GameSystem.isPad)
+        if (GameSystem.isPad())
         {
             if (allNum < 9)
             {

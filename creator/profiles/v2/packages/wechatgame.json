@@ -3,7 +3,8 @@
     "outputName": "wechatgame",
     "mainBundleCompressionType": "subpackage",
     "platform": "wechatgame",
-    "mainBundleIsRemote": false
+    "mainBundleIsRemote": false,
+    "replaceSplashScreen": true
   },
   "options": {
     "wechatgame": {

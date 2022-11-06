@@ -50,7 +50,7 @@ class _GameSystem {
     }
 
     initCachList(){
-        for(let i = 0; i < 14; i++){
+        for(let i = 0; i < 15; i++){
             let glass = instantiate(this.gamePrefab.getChildByName("Glass"))
             glass.active = false
             this.elementRoot.addChild(glass)

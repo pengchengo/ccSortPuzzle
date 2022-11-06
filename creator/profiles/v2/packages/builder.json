@@ -9,8 +9,7 @@
     "outputName": "wechatgame",
     "mainBundleCompressionType": "subpackage",
     "platform": "wechatgame",
-    "mainBundleIsRemote": false,
-    "replaceSplashScreen": true
+    "mainBundleIsRemote": false
   },
   "BuildTaskManager": {
     "taskMap": {
@@ -20,7 +19,7 @@
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2022-11-1 15:25 Build success in 9597 ms!",
+        "message": "2022-11-6 11:02 Build success in 22410 ms!",
         "options": {
           "name": "creator",
           "platform": "wechatgame",
@@ -36,7 +35,7 @@
           "useBuiltinServer": false,
           "mainBundleIsRemote": false,
           "mainBundleCompressionType": "subpackage",
-          "replaceSplashScreen": true,
+          "replaceSplashScreen": false,
           "compressTexture": true,
           "packAutoAtlas": true,
           "startScene": "5a933064-be3c-41e5-a2bf-8f974133b39d",
@@ -67,7 +66,7 @@
           },
           "__version__": "1.3.3"
         },
-        "time": "2022-11-1 15:24",
+        "time": "2022-11-6 11:01",
         "dirty": false
       }
     }

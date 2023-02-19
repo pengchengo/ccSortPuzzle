@@ -1,0 +1,22 @@
+{
+  "common": {
+    "outputName": "bytedance-mini-game",
+    "mainBundleCompressionType": "merge_dep",
+    "platform": "bytedance-mini-game"
+  },
+  "options": {
+    "bytedance-mini-game": {
+      "startSceneAssetBundle": false,
+      "appid": "tt654713fafa7939e902",
+      "orientation": "portrait",
+      "physX": {
+        "use": "project",
+        "notPackPhysXLibs": false,
+        "multiThread": false,
+        "subThreadCount": 1,
+        "epsilon": 0.001
+      },
+      "__version__": "1.0.2"
+    }
+  }
+}

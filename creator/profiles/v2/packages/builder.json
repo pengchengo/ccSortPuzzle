@@ -75,7 +75,7 @@
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2023-2-18 20:59 Build success in 62597 ms!",
+        "message": "2023-2-27 20:35 Build success in 11728 ms!",
         "options": {
           "name": "creator",
           "platform": "bytedance-mini-game",
@@ -107,7 +107,8 @@
           "packages": {
             "cocos-service": {
               "configID": "1b813c",
-              "services": []
+              "services": [],
+              "__version__": "3.0.4"
             },
             "bytedance-mini-game": {
               "startSceneAssetBundle": false,
@@ -126,7 +127,7 @@
           "__version__": "1.3.3",
           "bytedance-mini-game": []
         },
-        "time": "2023-2-18 20:58",
+        "time": "2023-2-27 20:35",
         "dirty": false
       }
     }

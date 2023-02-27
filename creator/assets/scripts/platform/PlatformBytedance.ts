@@ -6,7 +6,7 @@ export class _PlatformBytedance {
     isPingbi = false;
     APIVersion: string = "1.0.0";
 
-    VideoAdPos: string = "6agtqrgi3k45m54gf6";
+    VideoAdPos: string = "oddw42oc8jm4faecbj";
     BannerId: string = "2a1ob81q7imfk76k01";
     ShareId: string = "5cqpamtsr957l757i4";//5dltjh4slag4abfa9h 67c7li3me55d2q1chi
     InterstitialId: string = "1fson415jgf3ekml6m";
@@ -88,6 +88,7 @@ export class _PlatformBytedance {
             adUnitId: this.VideoAdPos
         });
         this.adRewardVideo.onClose(res => {
+            console.log("PlatformBytedance adRewardVideo onClose res=",res)
             if (res && res.isEnded) {
                 if (this.onVideoRewardHandler) {
                     this.onVideoRewardHandler();
@@ -198,6 +199,7 @@ export class _PlatformBytedance {
     private onVideoRewardHandler:Function;
     private onVideoCloseHandler:Function;
     showVideo(onReward: Function, onClose?: Function): void {
+        console.log("PlatformBytedance showVideo this.isTTPlatform=",this.isTTPlatform)
         if(!this.isTTPlatform) {
             onReward && onReward();
             return;

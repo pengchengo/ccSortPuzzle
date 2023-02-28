@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, resources, Sprite, SpriteFrame, Button, sys } from 'cc';
 import { GameSystem } from '../system/GameSystem';
+import { PlatformSystem } from '../system/PlatformSystem';
 import { PlayerData } from '../system/PlayerData';
 import { UISystem } from '../system/UISystem';
 import { BaseUI } from './BaseUI';
@@ -22,6 +23,7 @@ export class ResultUI extends BaseUI {
     }
 
     onEnable(){
+        PlatformSystem.stopRecorder()
         if(PlayerData.data.curLevel >= GameSystem.maxLevel){
             this.btnNext.active = false
         }else{
@@ -38,5 +40,12 @@ export class ResultUI extends BaseUI {
         this.hide()
         sys.localStorage.setItem("STORAGE_ADD_GLASS_KEY", undefined);
         GameSystem.StartLevel()
+    }
+
+    onClickShare(){
+        PlatformSystem.shareAppVideoMessage(()=>{
+            this.onClickNext()
+        },()=>{
+        })
     }
 }

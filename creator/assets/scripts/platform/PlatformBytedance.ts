@@ -16,7 +16,7 @@ export class _PlatformBytedance {
     ShareVideoTopic: string[] = ["宠物排序"];
     RecorderDuration = 300;
     ClipVideoTime = 30;
-    MinVideoTime = 15;
+    MinVideoTime = 5;
 
     private sysInfo: any;
     private adRewardVideo: any;
@@ -31,7 +31,7 @@ export class _PlatformBytedance {
         this.initSysInfo();
         this.getLaunchOptionsSync();
         this.initRewardVideo();
-        //this.initRecorder();
+        this.initRecorder();
         //this.initInterstitial();
     }
 
@@ -126,7 +126,7 @@ export class _PlatformBytedance {
             let videoPath = res.videoPath;
             let now = new Date().getTime();
             if(!this.MinVideoTime){
-                this.MinVideoTime = 15
+                this.MinVideoTime = 5
             }
             console.log('录屏结束,时常：' + (now - this.startRecorderTime) / 1000 + 's' + ',videoPath：' + this.videoPath);
             if (now - this.startRecorderTime < this.MinVideoTime * 1000) {

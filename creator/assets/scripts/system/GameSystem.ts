@@ -8,6 +8,7 @@ import { PlayerData } from './PlayerData';
 import { LevelUI } from '../ui/LevelUI';
 import { AudioSystem } from './AudioSystem';
 import { MainUI } from '../ui/MainUI';
+import { PlatformSystem } from './PlatformSystem';
 const { ccclass, property } = _decorator;
 
 class _GameSystem {
@@ -178,6 +179,8 @@ class _GameSystem {
     }
 
     StartLevel(){
+        PlatformSystem.stopRecorder()
+        PlatformSystem.startRecorder()
         this.curBackNum = 0
         this.moveElementNum = 0
         this.moveIndexMap = {}

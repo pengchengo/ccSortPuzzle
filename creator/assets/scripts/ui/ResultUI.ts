@@ -14,6 +14,9 @@ export class ResultUI extends BaseUI {
     @property({ type: Node })
     public btnNext: Node;
 
+    @property({ type: Node })
+    public btnShare: Node;
+
     start() {
 
     }
@@ -28,6 +31,11 @@ export class ResultUI extends BaseUI {
             this.btnNext.active = false
         }else{
             this.btnNext.active = true
+        }
+        if(PlayerData.data.curLevel <= 2){
+            this.btnShare.active = false
+        }else{
+            this.btnShare.active = true
         }
         if((PlayerData.data.curLevel + 1) > PlayerData.data.maxLevel){
             PlayerData.data.maxLevel = PlayerData.data.curLevel + 1

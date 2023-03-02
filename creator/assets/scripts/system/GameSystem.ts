@@ -184,6 +184,9 @@ class _GameSystem {
         this.curBackNum = 0
         this.moveElementNum = 0
         this.moveIndexMap = {}
+        if(MainUI.Inst){
+            MainUI.Inst.RefreshBackTxt();
+        }
         this.history = []
         this.selectIndex = this.NOT_SELECT;
 

@@ -61,7 +61,7 @@
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2023-3-1 21:56:04 Build success in 106998 ms!",
+        "message": "2023-3-2 20:41:34 Build success in 89397 ms!",
         "options": {
           "name": "creator",
           "platform": "bytedance-mini-game",
@@ -95,7 +95,7 @@
           "packages": {},
           "useSplashScreen": false
         },
-        "time": "2023-3-1 21:54",
+        "time": "2023-3-2 20:40",
         "dirty": false
       }
     }
